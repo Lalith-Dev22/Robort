@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
-import { Home, Info, Star, DollarSign, Phone } from "lucide-react";
+import { Home, Info, Star, Phone } from "lucide-react";
 
 type ThemeStyles = {
   background: string;
@@ -15,8 +15,7 @@ const navItems = [
   { name: "About", href: "#about", icon: Info },
   { name: "How It Works", href: "#how-it-works", icon: Star },
   { name: "Features", href: "#features", icon: Home },
-  { name: "Mission", href: "#mission", icon: Info },
-  { name: "Pricing", href: "#pricing", icon: DollarSign },
+  { name: "Mission", href: "#mission", icon: Info }, // lowercase #mission
   { name: "Contact", href: "#contact", icon: Phone },
 ];
 
@@ -24,18 +23,21 @@ const SmartDock = () => {
   const [currentSection, setCurrentSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
   const [showDock, setShowDock] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
+
       const sections = [
         { id: "hero", selector: "#hero" },
+        { id: "about", selector: "#about" },
         { id: "how-it-works", selector: "#how-it-works" },
         { id: "features", selector: "#features" },
         { id: "featured-in", selector: ".featured-in-section" },
-        { id: "mission", selector: "#mission" },
-        { id: "pricing", selector: "#pricing" },
+        { id: "mission", selector: "#mission" }, // fixed lowercase
         { id: "faq", selector: "#faq" },
+        { id: "contact", selector: "#contact" }, // added contact
         { id: "footer", selector: "footer" },
       ];
 
@@ -48,7 +50,6 @@ const SmartDock = () => {
         const bottom = top + rect.height;
         if (mid >= top && mid <= bottom) {
           setCurrentSection(sections[i].id);
-          // Only show dock in hero section
           setShowDock(sections[i].id === "hero");
           break;
         }
@@ -59,7 +60,6 @@ const SmartDock = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Hero theme since dock only shows in hero
   const theme: ThemeStyles = {
     background: "bg-white/10",
     border: "border-white/20",
@@ -68,8 +68,6 @@ const SmartDock = () => {
     backdrop: "backdrop-blur-xl",
   };
 
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -77,7 +75,9 @@ const SmartDock = () => {
   const scrollToSection = (href: string) => {
     if (href.startsWith("#")) {
       const el = document.querySelector(href);
-      el?.scrollIntoView({ behavior: "smooth" });
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     } else {
       window.location.href = href;
     }
@@ -87,18 +87,15 @@ const SmartDock = () => {
     <div className="fixed inset-x-0 bottom-4 z-[100] pointer-events-none">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
-        animate={{ 
-          opacity: showDock ? 1 : 0, 
-          y: showDock ? 0 : 16,
-        }}
+        animate={{ opacity: showDock ? 1 : 0, y: showDock ? 0 : 16 }}
         transition={{ duration: 0.35 }}
-        className={`mx-auto w-[min(88vw,820px)] h-16 sm:h-16 px-4 sm:px-5 rounded-3xl ${theme.backdrop} ${theme.background} ${theme.border} border shadow-xl flex items-center justify-center gap-3 sm:gap-5 ${
+        className={`mx-auto w-[min(70vw,600px)] h-14 sm:h-14 px-4 sm:px-5 rounded-3xl ${theme.backdrop} ${theme.background} ${theme.border} border shadow-xl flex items-center justify-center gap-3 sm:gap-5 ${
           scrolled ? "scale-[0.98]" : "scale-100"
         }`}
-        style={{ 
-          contain: "layout paint", 
+        style={{
+          contain: "layout paint",
           willChange: "transform",
-          pointerEvents: showDock ? "auto" : "none"
+          pointerEvents: showDock ? "auto" : "none",
         }}
       >
         {navItems.map(({ name, href, icon: Icon }) => (
@@ -108,7 +105,9 @@ const SmartDock = () => {
             className={`group flex flex-col items-center justify-center ${theme.text} ${theme.hoverText} transition-transform duration-200 px-2 py-1 rounded-xl hover:scale-110`}
           >
             <Icon size={18} className="mb-1" />
-            <span className="text-[10px] uppercase tracking-wide hidden sm:block">{name}</span>
+            <span className="text-[10px] uppercase tracking-wide hidden sm:block">
+              {name}
+            </span>
           </button>
         ))}
       </motion.div>
