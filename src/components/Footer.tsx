@@ -263,19 +263,7 @@ const Footer = () => {
         </motion.div>
 
         {/* Enhanced Copyright */}
-        <motion.div 
-          className="border-t border-white/10 pt-8 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <p className="text-white/60 font-light text-lg">
-            © 2024 Robort. All rights reserved. Built with{' '}
-            <span className="text-red-500 animate-pulse">❤️</span>{' '}
-            for the future of trading.
-          </p>
-        </motion.div>
+        
       </div>
 
       {/* Bottom fade to match features */}
